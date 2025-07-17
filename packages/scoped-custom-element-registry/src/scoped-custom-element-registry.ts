@@ -372,8 +372,11 @@ const registryForNode = (node: Node): ShimmedCustomElementsRegistry | null => {
       scope = scopeForElement.get(scope)?.getRootNode() || document;
     }
   }
+  // @see https://github.com/webcomponents/polyfills/issues/624
+  // The problem is that NordVPN add "registry" property on the host element
+  // this can break if the host element has a "registry" property already but there is not solution for this
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (scope as any)['registry'] as ShimmedCustomElementsRegistry | null;
+  return ((scope as any)['registry'] || ((scope as any).host ? (scope as any).host['registry'] : null)) as ShimmedCustomElementsRegistry | null;
 };
 
 // Helper to create stand-in element for each tagName registered that delegates
